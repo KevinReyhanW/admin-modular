@@ -21,9 +21,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, Plus, UserCircle, Trash2 } from "lucide-react";
+import { Search, Plus, UserCircle, Trash2, MoreHorizontal } from "lucide-react";
 import { AddUserDialog } from "./add-user-dialog";
 import { toast } from "sonner";
+import { EmptyState } from "@/components/ui/empty-state";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function UserTable() {
   const users = useAdminStore((s) => s.users);
@@ -119,9 +129,18 @@ export function UserTable() {
               <TableRow>
                 <TableCell
                   colSpan={6}
-                  className="text-center py-8 text-muted-foreground"
+                  className="py-12"
                 >
-                  No users found.
+                  <EmptyState
+                    title="No users found"
+                    description="We couldn't find any users matching your search filters. Try adjusting your search criteria."
+                    actionLabel="Clear Filters"
+                    onAction={() => {
+                      setSearch("");
+                      setCompanyFilter("all");
+                      setRoleFilter("all");
+                    }}
+                  />
                 </TableCell>
               </TableRow>
             ) : (
@@ -155,49 +174,49 @@ export function UserTable() {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      <Select
-                        value={user.role}
-                        onValueChange={(v) => {
-                          if (v) {
-                            updateUser(user.id, { role: v as UserRole });
-                            toast.success(`Role updated for ${user.name}`);
-                          }
-                        }}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger
+                        render={<Button variant="ghost" className="h-8 w-8 p-0" />}
                       >
-                        <SelectTrigger className="h-7 w-auto text-[10px] px-2 hidden sm:flex">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="company_admin">Admin</SelectItem>
-                          <SelectItem value="viewer">Viewer</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-xs"
-                        onClick={() => {
-                          toggleUserActive(user.id);
-                          toast.success(`User ${user.name} ${user.isActive ? 'deactivated' : 'activated'}`);
-                        }}
-                      >
-                        {user.isActive ? "Deactivate" : "Activate"}
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7 text-destructive hover:text-destructive"
-                        onClick={() => {
-                          if (confirm(`Are you sure you want to delete ${user.name}?`)) {
-                            deleteUser(user.id);
-                            toast.success(`User ${user.name} deleted`);
-                          }
-                        }}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
+                        <span className="sr-only">Open menu</span>
+                        <MoreHorizontal className="h-4 w-4" />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuGroup>
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuItem
+                            onClick={() => {
+                              const newRole = user.role === "company_admin" ? "viewer" : "company_admin";
+                              updateUser(user.id, { role: newRole });
+                              toast.success(`Role updated to ${newRole.replace("_", " ")}`);
+                            }}
+                          >
+                            {user.role === "company_admin" ? "Make Viewer" : "Make Admin"}
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => {
+                              toggleUserActive(user.id);
+                              toast.success(`User ${user.name} ${user.isActive ? 'deactivated' : 'activated'}`);
+                            }}
+                          >
+                            {user.isActive ? "Deactivate" : "Activate"}
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            className="text-destructive focus:text-destructive"
+                            onClick={() => {
+                              if (confirm(`Are you sure you want to delete ${user.name}?`)) {
+                                deleteUser(user.id);
+                                toast.success(`User ${user.name} deleted`);
+                              }
+                            }}
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuGroup>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </TableCell>
                 </TableRow>
               ))

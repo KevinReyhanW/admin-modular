@@ -105,7 +105,7 @@ export function AddCompanyDialog({ open, onOpenChange }: AddCompanyDialogProps) 
               value={status}
               onValueChange={(v) => v && setStatus(v as CompanyStatus)}
             >
-              <SelectTrigger>
+              <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>

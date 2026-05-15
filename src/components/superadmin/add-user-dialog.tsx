@@ -96,7 +96,7 @@ export function AddUserDialog({ open, onOpenChange }: AddUserDialogProps) {
               value={companyId}
               onValueChange={(value) => value && setCompanyId(value)}
             >
-              <SelectTrigger>
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select a company" />
               </SelectTrigger>
               <SelectContent>
@@ -114,7 +114,7 @@ export function AddUserDialog({ open, onOpenChange }: AddUserDialogProps) {
               value={role}
               onValueChange={(v) => v && setRole(v as UserRole)}
             >
-              <SelectTrigger>
+              <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>

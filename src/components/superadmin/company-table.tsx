@@ -21,10 +21,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, Plus, Building2 } from "lucide-react";
+import { Search, Plus, Building2, MoreHorizontal, Pencil } from "lucide-react";
 import Link from "next/link";
 import { AddCompanyDialog } from "./add-company-dialog";
 import { EditCompanySheet } from "./edit-company-sheet";
+import { EmptyState } from "@/components/ui/empty-state";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import type { Company } from "@/lib/mock-data";
 
 export function CompanyTable() {
@@ -111,8 +121,17 @@ export function CompanyTable() {
           <TableBody>
             {filtered.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                  No companies found.
+                <TableCell colSpan={5} className="py-12">
+                  <EmptyState
+                    title="No companies found"
+                    description="We couldn't find any companies matching your search filters. Try adjusting your search criteria."
+                    actionLabel="Clear Filters"
+                    onAction={() => {
+                      setSearch("");
+                      setStatusFilter("all");
+                      setProductFilter("all");
+                    }}
+                  />
                 </TableCell>
               </TableRow>
             ) : (
@@ -169,13 +188,29 @@ export function CompanyTable() {
                     </div>
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setEditCompany(company)}
-                    >
-                      Edit
-                    </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger
+                        render={<Button variant="ghost" className="h-8 w-8 p-0" />}
+                      >
+                        <span className="sr-only">Open menu</span>
+                        <MoreHorizontal className="h-4 w-4" />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuGroup>
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuItem
+                            render={<Link href={`/superadmin/companies/${company.id}`} className="cursor-pointer" />}
+                          >
+                            View Details
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => setEditCompany(company)}>
+                            <Pencil className="mr-2 h-4 w-4" />
+                            Edit Company
+                          </DropdownMenuItem>
+                        </DropdownMenuGroup>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </TableCell>
                 </TableRow>
               ))

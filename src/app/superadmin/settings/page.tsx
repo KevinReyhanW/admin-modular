@@ -46,118 +46,140 @@ export default function SettingsPage() {
         </TabsList>
 
         {/* Profile tab */}
-        <TabsContent value="profile">
-          <div className="grid gap-6 md:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <div className="flex items-center gap-2">
-                  <User className="h-4 w-4 text-muted-foreground" />
-                  <CardTitle className="text-base">Profile Information</CardTitle>
+        <TabsContent value="profile" className="mt-6">
+          <div className="grid gap-8 md:grid-cols-2 lg:max-w-5xl">
+            <Card className="border-border/50 shadow-sm bg-card/60 backdrop-blur-sm transition-all duration-200 hover:shadow-md hover:bg-card/80">
+              <CardHeader className="px-6 pt-6 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-primary/10 rounded-md">
+                    <User className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg">Profile Information</CardTitle>
+                    <p className="text-xs text-muted-foreground mt-0.5">Update your personal details.</p>
+                  </div>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="settings-name">Name</Label>
+              <CardContent className="space-y-6 px-6 pb-6">
+                <div className="space-y-2.5">
+                  <Label htmlFor="settings-name" className="text-sm font-medium">Full Name</Label>
                   <Input
                     id="settings-name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
+                    className="h-10 transition-colors focus-visible:ring-primary/30"
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="settings-email">Email</Label>
+                <div className="space-y-2.5">
+                  <Label htmlFor="settings-email" className="text-sm font-medium">Email Address</Label>
                   <Input
                     id="settings-email"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    className="h-10 transition-colors focus-visible:ring-primary/30"
                   />
                 </div>
-                <div className="flex items-center gap-2">
-                  <Label>Role</Label>
-                  <Badge variant="secondary" className="text-[10px] uppercase">
+                <div className="pt-2">
+                  <Label className="text-sm font-medium block mb-2.5">Current Role</Label>
+                  <Badge variant="secondary" className="px-3 py-1 bg-muted/50 text-muted-foreground uppercase text-[11px] font-semibold tracking-wider">
                     {session.role.replace("_", " ")}
                   </Badge>
                 </div>
-                <Separator />
-                <Button size="sm" onClick={() => toast.success("Profile updated successfully")}>Save Changes</Button>
+                <div className="pt-2">
+                  <Separator className="mb-6 opacity-60" />
+                  <Button onClick={() => toast.success("Profile updated successfully")} className="w-full sm:w-auto h-10 px-6 font-medium">
+                    Save Changes
+                  </Button>
+                </div>
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <div className="flex items-center gap-2">
-                  <Shield className="h-4 w-4 text-muted-foreground" />
-                  <CardTitle className="text-base">Change Password</CardTitle>
+            <Card className="border-border/50 shadow-sm bg-card/60 backdrop-blur-sm transition-all duration-200 hover:shadow-md hover:bg-card/80">
+              <CardHeader className="px-6 pt-6 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-primary/10 rounded-md">
+                    <Shield className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg">Security Settings</CardTitle>
+                    <p className="text-xs text-muted-foreground mt-0.5">Change your account password.</p>
+                  </div>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="current-password">Current Password</Label>
+              <CardContent className="space-y-6 px-6 pb-6">
+                <div className="space-y-2.5">
+                  <Label htmlFor="current-password" className="text-sm font-medium">Current Password</Label>
                   <Input
                     id="current-password"
                     type="password"
+                    placeholder="Enter current password"
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
+                    className="h-10 transition-colors focus-visible:ring-primary/30"
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="new-password">New Password</Label>
+                <div className="space-y-2.5">
+                  <Label htmlFor="new-password" className="text-sm font-medium">New Password</Label>
                   <Input
                     id="new-password"
                     type="password"
+                    placeholder="Enter new password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
+                    className="h-10 transition-colors focus-visible:ring-primary/30"
                   />
                 </div>
-                <Separator />
-                <Button
-                  size="sm"
-                  disabled={!currentPassword || !newPassword}
-                  onClick={() => {
-                    toast.success("Password updated successfully");
-                    setCurrentPassword("");
-                    setNewPassword("");
-                  }}
-                >
-                  Update Password
-                </Button>
+                <div className="pt-2">
+                  <Separator className="mb-6 opacity-60" />
+                  <Button
+                    disabled={!currentPassword || !newPassword}
+                    onClick={() => {
+                      toast.success("Password updated successfully");
+                      setCurrentPassword("");
+                      setNewPassword("");
+                    }}
+                    className="w-full sm:w-auto h-10 px-6 font-medium"
+                  >
+                    Update Password
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           </div>
         </TabsContent>
 
         {/* Audit Log tab */}
-        <TabsContent value="audit">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Recent Activity</CardTitle>
+        <TabsContent value="audit" className="mt-6">
+          <Card className="border-border/50 shadow-sm overflow-hidden">
+            <CardHeader className="px-6 py-5 bg-muted/20 border-b border-border/40">
+              <CardTitle className="text-lg">Recent System Activity</CardTitle>
             </CardHeader>
             <CardContent className="p-0">
               <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Action</TableHead>
-                    <TableHead className="hidden sm:table-cell">
-                      Performed By
-                    </TableHead>
-                    <TableHead>Target</TableHead>
-                    <TableHead className="text-right">Timestamp</TableHead>
+                <TableHeader className="bg-muted/10">
+                  <TableRow className="hover:bg-transparent">
+                    <TableHead className="pl-6 h-11 text-xs uppercase font-semibold text-muted-foreground tracking-wider">Action</TableHead>
+                    <TableHead className="hidden sm:table-cell h-11 text-xs uppercase font-semibold text-muted-foreground tracking-wider">Performed By</TableHead>
+                    <TableHead className="h-11 text-xs uppercase font-semibold text-muted-foreground tracking-wider">Target</TableHead>
+                    <TableHead className="text-right pr-6 h-11 text-xs uppercase font-semibold text-muted-foreground tracking-wider">Timestamp</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {auditLog.map((entry) => (
-                    <TableRow key={entry.id}>
-                      <TableCell className="font-medium text-sm">
+                    <TableRow key={entry.id} className="group hover:bg-muted/30 transition-colors">
+                      <TableCell className="font-medium text-sm pl-6 py-3">
                         {entry.action}
                       </TableCell>
-                      <TableCell className="hidden sm:table-cell text-sm text-muted-foreground">
+                      <TableCell className="hidden sm:table-cell text-sm text-muted-foreground py-3">
                         {entry.performedBy}
                       </TableCell>
-                      <TableCell className="text-sm">
-                        {entry.target}
+                      <TableCell className="text-sm py-3">
+                        <Badge variant="outline" className="font-normal text-xs bg-background/50">
+                          {entry.target}
+                        </Badge>
                       </TableCell>
-                      <TableCell className="text-right text-xs text-muted-foreground">
+                      <TableCell className="text-right text-xs text-muted-foreground pr-6 py-3">
                         {new Date(entry.timestamp).toLocaleDateString("en-US", {
                           month: "short",
                           day: "numeric",

@@ -56,9 +56,11 @@ export function Topbar({ onMobileMenuToggle }: TopbarProps) {
       </div>
 
       <div className="flex items-center gap-3">
-        <Badge variant="secondary" className="border border-primary/15 bg-primary/10 text-[10px] uppercase tracking-wider font-medium text-primary">
-          {session.role.replace("_", " ")}
-        </Badge>
+        <div className="hidden sm:flex items-center">
+          <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground bg-muted px-2 py-1 rounded-md">
+            {session.role.replace("_", " ")}
+          </span>
+        </div>
 
         <DropdownMenu>
           <DropdownMenuTrigger

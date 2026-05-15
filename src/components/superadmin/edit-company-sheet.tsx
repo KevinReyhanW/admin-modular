@@ -37,8 +37,8 @@ export function EditCompanySheet({ company, onClose }: EditCompanySheetProps) {
   return (
     <Sheet open={!!company} onOpenChange={(open) => !open && onClose()}>
       <SheetContent className="w-full sm:max-w-md">
-        <SheetHeader>
-          <SheetTitle>Edit Company</SheetTitle>
+        <SheetHeader className="px-6 pt-6 pb-2">
+          <SheetTitle className="text-xl font-semibold tracking-tight">Edit Company</SheetTitle>
         </SheetHeader>
         {company && (
           <EditCompanyForm
@@ -97,31 +97,33 @@ function EditCompanyForm({
 
   return (
     <>
-      <div className="space-y-4 py-4">
+      <div className="space-y-5 px-6 py-4 flex-1 overflow-y-auto">
         <div className="space-y-2">
-          <Label htmlFor="edit-name">Company Name</Label>
+          <Label htmlFor="edit-name" className="text-sm font-medium">Company Name</Label>
           <Input
             id="edit-name"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            className="h-10 transition-colors focus-visible:ring-primary/30"
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="edit-email">Primary Contact Email</Label>
+          <Label htmlFor="edit-email" className="text-sm font-medium">Primary Contact Email</Label>
           <Input
             id="edit-email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            className="h-10 transition-colors focus-visible:ring-primary/30"
           />
         </div>
         <div className="space-y-2">
-          <Label>Status</Label>
+          <Label className="text-sm font-medium">Status</Label>
           <Select
             value={status}
             onValueChange={(v) => v && setStatus(v as CompanyStatus)}
           >
-            <SelectTrigger>
+            <SelectTrigger className="w-full h-10 transition-colors focus-visible:ring-primary/30">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -131,32 +133,41 @@ function EditCompanyForm({
             </SelectContent>
           </Select>
         </div>
-        <div className="space-y-3">
-          <Label>Product Access</Label>
-          {(Object.keys(PRODUCTS) as ProductKey[]).map((key) => (
-            <div key={key} className="flex items-center gap-2">
-              <Checkbox
-                id={`edit-product-${key}`}
-                checked={products[key]}
-                onCheckedChange={(checked) =>
-                  setProducts((prev) => ({ ...prev, [key]: !!checked }))
-                }
-              />
-              <label
-                htmlFor={`edit-product-${key}`}
-                className="text-sm font-medium leading-none cursor-pointer"
-              >
-                {PRODUCTS[key].name}
-              </label>
-            </div>
-          ))}
+        
+        <div className="pt-2 space-y-4">
+          <Label className="text-sm font-medium">Product Access</Label>
+          <div className="grid gap-3 p-4 rounded-xl border border-border/50 bg-muted/20">
+            {(Object.keys(PRODUCTS) as ProductKey[]).map((key) => (
+              <div key={key} className="flex items-start gap-3">
+                <Checkbox
+                  id={`edit-product-${key}`}
+                  checked={products[key]}
+                  onCheckedChange={(checked) =>
+                    setProducts((prev) => ({ ...prev, [key]: !!checked }))
+                  }
+                  className="mt-0.5"
+                />
+                <div className="grid gap-1.5 leading-none">
+                  <label
+                    htmlFor={`edit-product-${key}`}
+                    className="text-sm font-medium leading-none cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    {PRODUCTS[key].name}
+                  </label>
+                  <p className="text-[13px] text-muted-foreground leading-snug">
+                    {PRODUCTS[key].description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-      <SheetFooter>
-        <Button variant="outline" onClick={onClose}>
+      <SheetFooter className="px-6 py-6 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <Button variant="outline" onClick={onClose} className="h-10 px-6 font-medium">
           Cancel
         </Button>
-        <Button onClick={handleSave} disabled={!name.trim() || !email.trim()}>
+        <Button onClick={handleSave} disabled={!name.trim() || !email.trim()} className="h-10 px-6 font-medium">
           Save Changes
         </Button>
       </SheetFooter>
