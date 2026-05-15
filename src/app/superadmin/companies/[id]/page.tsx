@@ -10,8 +10,10 @@ import { ProductToggleCard } from "@/components/superadmin/product-toggle-card";
 import { UsageCharts } from "@/components/superadmin/usage-charts";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { ArrowLeft, Building2, Mail, Calendar } from "lucide-react";
+import { ArrowLeft, Building2, Mail, Calendar, Trash2 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
@@ -28,8 +30,10 @@ export default function CompanyDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
+  const router = useRouter();
   const companies = useAdminStore((s) => s.companies);
   const users = useAdminStore((s) => s.users);
+  const deleteCompany = useAdminStore((s) => s.deleteCompany);
 
   const company = companies.find((c) => c.id === id);
   const companyUsers = users.filter((u) => u.companyId === id);
@@ -63,18 +67,33 @@ export default function CompanyDetailPage({
           <h1 className="text-2xl font-bold tracking-tight">{company.name}</h1>
           <p className="text-muted-foreground text-sm">{company.contactEmail}</p>
         </div>
-        <Badge
-          variant={
-            company.status === "active"
-              ? "default"
-              : company.status === "inactive"
-              ? "secondary"
-              : "destructive"
-          }
-          className="ml-auto capitalize"
-        >
-          {company.status}
-        </Badge>
+        <div className="ml-auto flex items-center gap-2">
+          <Badge
+            variant={
+              company.status === "active"
+                ? "default"
+                : company.status === "inactive"
+                ? "secondary"
+                : "destructive"
+            }
+            className="capitalize"
+          >
+            {company.status}
+          </Badge>
+          <button
+            onClick={() => {
+              if (confirm(`Are you sure you want to delete ${company.name}? This will also delete all associated users.`)) {
+                deleteCompany(company.id);
+                toast.success(`Company ${company.name} deleted.`);
+                router.push("/superadmin/companies");
+              }
+            }}
+            className={cn(buttonVariants({ variant: "destructive", size: "icon" }), "h-8 w-8")}
+            title="Delete Company"
+          >
+            <Trash2 className="h-4 w-4" />
+          </button>
+        </div>
       </div>
 
       <Tabs defaultValue="overview" className="space-y-4">

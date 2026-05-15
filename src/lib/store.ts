@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import {
   Company,
   User,
@@ -12,76 +13,97 @@ interface AdminState {
   companies: Company[];
   addCompany: (company: Omit<Company, "id" | "createdAt">) => void;
   updateCompany: (id: string, data: Partial<Company>) => void;
+  deleteCompany: (id: string) => void;
   toggleProduct: (companyId: string, product: ProductKey) => void;
 
   // Users
   users: User[];
   addUser: (user: Omit<User, "id" | "createdAt">) => void;
   updateUser: (id: string, data: Partial<User>) => void;
+  deleteUser: (id: string) => void;
   toggleUserActive: (userId: string) => void;
 }
 
-export const useAdminStore = create<AdminState>((set) => ({
-  companies: [...mockCompanies],
+export const useAdminStore = create<AdminState>()(
+  persist(
+    (set) => ({
+      companies: [...mockCompanies],
 
-  addCompany: (company) =>
-    set((state) => ({
-      companies: [
-        ...state.companies,
-        {
-          ...company,
-          id: `comp-${String(state.companies.length + 1).padStart(3, "0")}`,
-          createdAt: new Date().toISOString(),
-        },
-      ],
-    })),
+      addCompany: (company) =>
+        set((state) => ({
+          companies: [
+            ...state.companies,
+            {
+              ...company,
+              id: `comp-${String(Date.now()).slice(-6)}`,
+              createdAt: new Date().toISOString(),
+            },
+          ],
+        })),
 
-  updateCompany: (id, data) =>
-    set((state) => ({
-      companies: state.companies.map((c) =>
-        c.id === id ? { ...c, ...data } : c
-      ),
-    })),
+      updateCompany: (id, data) =>
+        set((state) => ({
+          companies: state.companies.map((c) =>
+            c.id === id ? { ...c, ...data } : c
+          ),
+        })),
 
-  toggleProduct: (companyId, product) =>
-    set((state) => ({
-      companies: state.companies.map((c) => {
-        if (c.id !== companyId) return c;
-        const newAccess = !c.productAccess[product];
-        return {
-          ...c,
-          productAccess: { ...c.productAccess, [product]: newAccess },
-          productEnabledAt: {
-            ...c.productEnabledAt,
-            [product]: newAccess ? new Date().toISOString() : c.productEnabledAt[product],
-          },
-        };
-      }),
-    })),
+      deleteCompany: (id) =>
+        set((state) => ({
+          companies: state.companies.filter((c) => c.id !== id),
+          // Cascade delete users
+          users: state.users.filter((u) => u.companyId !== id),
+        })),
 
-  users: [...mockUsers],
+      toggleProduct: (companyId, product) =>
+        set((state) => ({
+          companies: state.companies.map((c) => {
+            if (c.id !== companyId) return c;
+            const newAccess = !c.productAccess[product];
+            return {
+              ...c,
+              productAccess: { ...c.productAccess, [product]: newAccess },
+              productEnabledAt: {
+                ...c.productEnabledAt,
+                [product]: newAccess ? new Date().toISOString() : c.productEnabledAt[product],
+              },
+            };
+          }),
+        })),
 
-  addUser: (user) =>
-    set((state) => ({
-      users: [
-        ...state.users,
-        {
-          ...user,
-          id: `user-${String(state.users.length + 1).padStart(3, "0")}`,
-          createdAt: new Date().toISOString(),
-        },
-      ],
-    })),
+      users: [...mockUsers],
 
-  updateUser: (id, data) =>
-    set((state) => ({
-      users: state.users.map((u) => (u.id === id ? { ...u, ...data } : u)),
-    })),
+      addUser: (user) =>
+        set((state) => ({
+          users: [
+            ...state.users,
+            {
+              ...user,
+              id: `user-${String(Date.now()).slice(-6)}`,
+              createdAt: new Date().toISOString(),
+            },
+          ],
+        })),
 
-  toggleUserActive: (userId) =>
-    set((state) => ({
-      users: state.users.map((u) =>
-        u.id === userId ? { ...u, isActive: !u.isActive } : u
-      ),
-    })),
-}));
+      updateUser: (id, data) =>
+        set((state) => ({
+          users: state.users.map((u) => (u.id === id ? { ...u, ...data } : u)),
+        })),
+
+      deleteUser: (id) =>
+        set((state) => ({
+          users: state.users.filter((u) => u.id !== id),
+        })),
+
+      toggleUserActive: (userId) =>
+        set((state) => ({
+          users: state.users.map((u) =>
+            u.id === userId ? { ...u, isActive: !u.isActive } : u
+          ),
+        })),
+    }),
+    {
+      name: "admin-store",
+    }
+  )
+);

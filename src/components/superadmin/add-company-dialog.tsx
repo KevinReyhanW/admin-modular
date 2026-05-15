@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { toast } from "sonner";
 
 interface AddCompanyDialogProps {
   open: boolean;
@@ -39,7 +40,15 @@ export function AddCompanyDialog({ open, onOpenChange }: AddCompanyDialogProps) 
   });
 
   const handleSubmit = () => {
-    if (!name.trim() || !email.trim()) return;
+    if (!name.trim() || !email.trim()) {
+      toast.error("Please fill in all required fields.");
+      return;
+    }
+    
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
 
     const now = new Date().toISOString();
     addCompany({
@@ -53,6 +62,8 @@ export function AddCompanyDialog({ open, onOpenChange }: AddCompanyDialogProps) 
         claimmind: products.claimmind ? now : null,
       },
     });
+
+    toast.success(`Company ${name} created successfully.`);
 
     // Reset form
     setName("");

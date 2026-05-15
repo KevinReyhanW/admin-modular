@@ -19,6 +19,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { User, Shield } from "lucide-react";
+import { toast } from "sonner";
 
 export default function SettingsPage() {
   const session = useAdminSession();
@@ -79,7 +80,7 @@ export default function SettingsPage() {
                   </Badge>
                 </div>
                 <Separator />
-                <Button size="sm">Save Changes</Button>
+                <Button size="sm" onClick={() => toast.success("Profile updated successfully")}>Save Changes</Button>
               </CardContent>
             </Card>
 
@@ -113,6 +114,11 @@ export default function SettingsPage() {
                 <Button
                   size="sm"
                   disabled={!currentPassword || !newPassword}
+                  onClick={() => {
+                    toast.success("Password updated successfully");
+                    setCurrentPassword("");
+                    setNewPassword("");
+                  }}
                 >
                   Update Password
                 </Button>

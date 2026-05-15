@@ -20,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { toast } from "sonner";
 
 interface AddUserDialogProps {
   open: boolean;
@@ -36,7 +37,15 @@ export function AddUserDialog({ open, onOpenChange }: AddUserDialogProps) {
   const [role, setRole] = useState<UserRole>("viewer");
 
   const handleSubmit = () => {
-    if (!name.trim() || !email.trim() || !companyId) return;
+    if (!name.trim() || !email.trim() || !companyId) {
+      toast.error("Please fill in all required fields.");
+      return;
+    }
+    
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
 
     addUser({
       name: name.trim(),
@@ -45,6 +54,8 @@ export function AddUserDialog({ open, onOpenChange }: AddUserDialogProps) {
       role,
       isActive: true,
     });
+    
+    toast.success(`User ${name} created successfully.`);
 
     setName("");
     setEmail("");

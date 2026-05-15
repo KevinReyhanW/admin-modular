@@ -21,14 +21,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, Plus, UserCircle } from "lucide-react";
+import { Search, Plus, UserCircle, Trash2 } from "lucide-react";
 import { AddUserDialog } from "./add-user-dialog";
+import { toast } from "sonner";
 
 export function UserTable() {
   const users = useAdminStore((s) => s.users);
   const companies = useAdminStore((s) => s.companies);
   const toggleUserActive = useAdminStore((s) => s.toggleUserActive);
   const updateUser = useAdminStore((s) => s.updateUser);
+  const deleteUser = useAdminStore((s) => s.deleteUser);
 
   const [search, setSearch] = useState("");
   const [companyFilter, setCompanyFilter] = useState<string>("all");
@@ -156,9 +158,12 @@ export function UserTable() {
                     <div className="flex items-center justify-end gap-1">
                       <Select
                         value={user.role}
-                        onValueChange={(v) =>
-                          v && updateUser(user.id, { role: v as UserRole })
-                        }
+                        onValueChange={(v) => {
+                          if (v) {
+                            updateUser(user.id, { role: v as UserRole });
+                            toast.success(`Role updated for ${user.name}`);
+                          }
+                        }}
                       >
                         <SelectTrigger className="h-7 w-auto text-[10px] px-2 hidden sm:flex">
                           <SelectValue />
@@ -172,9 +177,25 @@ export function UserTable() {
                         variant="ghost"
                         size="sm"
                         className="text-xs"
-                        onClick={() => toggleUserActive(user.id)}
+                        onClick={() => {
+                          toggleUserActive(user.id);
+                          toast.success(`User ${user.name} ${user.isActive ? 'deactivated' : 'activated'}`);
+                        }}
                       >
                         {user.isActive ? "Deactivate" : "Activate"}
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7 text-destructive hover:text-destructive"
+                        onClick={() => {
+                          if (confirm(`Are you sure you want to delete ${user.name}?`)) {
+                            deleteUser(user.id);
+                            toast.success(`User ${user.name} deleted`);
+                          }
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
                   </TableCell>

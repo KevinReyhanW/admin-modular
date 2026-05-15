@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { LogOut, User, Menu } from "lucide-react";
+import { useAuthStore } from "@/lib/hooks";
+import { useRouter } from "next/navigation";
 
 interface TopbarProps {
   onMobileMenuToggle?: () => void;
@@ -19,6 +21,13 @@ interface TopbarProps {
 
 export function Topbar({ onMobileMenuToggle }: TopbarProps) {
   const session = useAdminSession();
+  const logout = useAuthStore((s) => s.logout);
+  const router = useRouter();
+
+  const handleLogout = () => {
+    logout();
+    router.push("/login");
+  };
 
   const initials = session.name
     .split(" ")
@@ -77,7 +86,7 @@ export function Topbar({ onMobileMenuToggle }: TopbarProps) {
               Profile
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-destructive focus:text-destructive">
+            <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={handleLogout}>
               <LogOut className="mr-2 h-4 w-4" />
               Logout
             </DropdownMenuItem>

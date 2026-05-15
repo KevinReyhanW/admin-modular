@@ -26,6 +26,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { toast } from "sonner";
 
 interface EditCompanySheetProps {
   company: Company | null;
@@ -67,7 +68,15 @@ function EditCompanyForm({
   });
 
   const handleSave = () => {
-    if (!name.trim() || !email.trim()) return;
+    if (!name.trim() || !email.trim()) {
+      toast.error("Please fill in all required fields.");
+      return;
+    }
+    
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
 
     const now = new Date().toISOString();
     updateCompany(company.id, {
@@ -81,6 +90,8 @@ function EditCompanyForm({
         claimmind: products.claimmind && !company.productAccess.claimmind ? now : company.productEnabledAt.claimmind,
       },
     });
+    
+    toast.success(`Company ${name} updated successfully.`);
     onClose();
   };
 

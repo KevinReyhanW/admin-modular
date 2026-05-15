@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/lib/hooks";
 import { Sidebar } from "@/components/superadmin/sidebar";
 import { Topbar } from "@/components/superadmin/topbar";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,7 +12,24 @@ export default function SuperAdminLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
+  const user = useAuthStore((s) => s.user);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (mounted && !user) {
+      router.push("/login");
+    }
+  }, [user, mounted, router]);
+
+  if (!mounted || !user) {
+    return null; // or a loading spinner
+  }
 
   return (
     <TooltipProvider>
